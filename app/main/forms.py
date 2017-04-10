@@ -1,5 +1,13 @@
+#encoding=utf-8
 '''
-Created on 2017Äê4ÔÂ5ÈÕ
+Created on 2017ï¿½ï¿½4ï¿½ï¿½5ï¿½ï¿½
 
 @author: Administrator
 '''
+from flask_wtf import Form
+from wtforms import StringField,SubmitField
+from wtforms.validators import Required
+
+class NameForm(Form):
+    name=StringField('what is your name?',validators=[Required()])
+    submit=SubmitField('Submit')

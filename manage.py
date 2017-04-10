@@ -1,5 +1,6 @@
+#encoding=utf-8
 '''
-Created on 2017Äê4ÔÂ5ÈÕ
+Created on 2017ï¿½ï¿½4ï¿½ï¿½5ï¿½ï¿½
 
 @author: Administrator
 '''
@@ -9,7 +10,7 @@ from app.models import User,Role
 from flask_script import Manager,Shell
 from flask_migrate import Migrate,MigrateCommand
 
-app=create_app(os.getenv('FLASK_CONFIG'))
+app=create_app(os.getenv('FLASK_CONFIG') or 'default')
 manager=Manager(app)
 migrate=Migrate(app,db)
 
