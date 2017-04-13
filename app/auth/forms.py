@@ -1,12 +1,12 @@
 #encoding=utf-8
 '''
-Created on 2017Äê4ÔÂ11ÈÕ
+Created on 2017ï¿½ï¿½4ï¿½ï¿½11ï¿½ï¿½
 
 @author: Administrator
 '''
 from flask_wtf import Form
 from wtforms import StringField,PasswordField,BooleanField,SubmitField
-from wtforms.validators import Required,Email
+from wtforms.validators import Required,Length,Email
 
 class LoginForm(Form):
     email=StringField('Email',validators=[Required(),Length(1,64),Email()])
