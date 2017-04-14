@@ -4,6 +4,8 @@ Created on 2017��4��5��
 
 @author: Administrator
 '''
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from flask import current_app
 from . import db
 from . import login_manager
 
@@ -14,9 +16,12 @@ class Role(db.Model):
     __tablename__='roles'
     id=db.Column(db.Integer,primary_key=True)
     name=db.Column(db.String(64),unique=True)
+    default=db.Column(db.Boolean,default=False,index=True)
+    permissions=db.Column(db.Integer)
     users=db.relationship('User',backref='role',lazy='dynamic')
     def __repr__(self):
         return '<Role %r>'%self.name
+    
 
 class User(UserMixin,db.Model):
     __table__name='users'
@@ -25,6 +30,8 @@ class User(UserMixin,db.Model):
     username=db.Column(db.String(64),unique=True,index=True)
     password_hash=db.Column(db.String(128))
     role_id=db.Column(db.Integer,db.ForeignKey('roles.id'))
+    confirmed=db.Column(db.Boolean,default=False)
+    
     def __repr__(self):
         return '<User %r>'%self.username
     @property
@@ -36,6 +43,28 @@ class User(UserMixin,db.Model):
     def verify_password(self,password):
         return check_password_hash(self.password_hash,password)
     
+    def generate_confirmation_token(self,expiration=3600):
+        s=Serializer(current_app.config['SECRET_KEY'],expiration)
+        return s.dumps({'confirm':self.id})
+    def confirm(self,token):
+        s=Serializer(current_app.config['SECRET_KEY'])
+        try:
+            data=s.loads(token)
+        except:
+            return False
+        if data.get('confirm')!=self.id:
+            return False
+        self.confirmd=True
+        db.session.add(self)
+        return True
+
+class Permission:
+    FOLLOW=0X01
+    COMMENT=0X02
+    WRITE_ARTICLES=0X04
+    MODERATE_COMMENTS=0X08
+    ADMINISTER=0X80
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
